@@ -13,7 +13,7 @@ const globalError = require("./middlewares/errors/globalError");
 const ErrorOutsideExpress = require("./middlewares/errors/errorOutsideExpress");
 //DATABASE IMPORT
 const dbConnection = require("./database");
-
+console.log("hello backend");
 dotenv.config({ path: "config.env" });
 const app = express();
 
