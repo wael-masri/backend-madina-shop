@@ -1,11 +1,12 @@
 //LIBRARY IMPORT
 const express = require("express");
 const compression = require("compression");
-const cors = require('cors')
+const cors = require("cors");
 const path = require("path");
 const dotenv = require("dotenv");
 //PAGES IMPORT
 const mountRoutes = require("./routes");
+const webhookCheckout = require("./controllers/orderControllers");
 //MIDDLEWARES IMPORT
 const ApiError = require("./middlewares/errors/apiError");
 const globalError = require("./middlewares/errors/globalError");
@@ -17,9 +18,16 @@ dotenv.config({ path: "config.env" });
 const app = express();
 
 app.use(cors());
-app.options('*', cors());
-//COMPRESS ALL RESPONSE 
+app.options("*", cors());
+//COMPRESS ALL RESPONSE
 app.use(compression());
+
+//webhhok checkout
+app.post(
+  "/webhook-checkout",
+  express.raw({ type: "application/json" }),
+  webhookCheckout
+);
 //EXCUTE DATABASE CONNECTION
 dbConnection();
 
