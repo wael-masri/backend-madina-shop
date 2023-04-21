@@ -21,7 +21,7 @@ app.use(cors());
 app.options("*", cors());
 //COMPRESS ALL RESPONSE
 app.use(compression());
-
+console.log("MedinaShop Running...")
 //webhhok checkout
 app.post(
   "/webhook-checkout",
