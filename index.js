@@ -6,7 +6,7 @@ const path = require("path");
 const dotenv = require("dotenv");
 //PAGES IMPORT
 const mountRoutes = require("./routes");
-const webhookCheckout = require("./controllers/orderControllers");
+const {webhookCheckout} = require("./controllers/orderControllers");
 //MIDDLEWARES IMPORT
 const ApiError = require("./middlewares/errors/apiError");
 const globalError = require("./middlewares/errors/globalError");
