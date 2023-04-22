@@ -92,7 +92,7 @@ exports.getOrder = asyncHandler(async (req, res, next) => {
 exports.checkoutSession = asyncHandler(async (req, res, next) => {
   // app settings
   const taxPrice = 0;
-  const objectInfo = {};
+  let objectInfo = {};
   // 1) Get cart depend on cartId
   const cart = await Cart.findById(req.params.cartId);
   if (!cart) {
@@ -107,8 +107,9 @@ exports.checkoutSession = asyncHandler(async (req, res, next) => {
     : cart.totalCartPrice;
 
   const totalOrderPrice = cartPrice + taxPrice + req.body.shippingPrice;
-  objectInfo.shippingPrice = req.body.shippingPrice;
-  objectInfo.shippingAddress = req.body.shippingAddress;
+ 
+  objectInfo = req.body.shippingAddress;
+   objectInfo.shippingPrice = req.body.shippingPrice;
   // 3) Create stripe checkout session
   const session = await stripe.checkout.sessions.create({
     line_items: [
@@ -138,17 +139,18 @@ exports.checkoutSession = asyncHandler(async (req, res, next) => {
 const createCardOrder = async (session) => {
   const cartId = session.client_reference_id;
   const detailData = session.metadata;
+  const shippingPrice = detailData.shippingPrice;
+  delete detailData.shippingPrice;
   const oderPrice = session.amount_total / 100;
-
   const cart = await Cart.findById(cartId);
   const user = await User.findOne({ email: session.customer_email });
-
+  
   // 3) Create order with default paymentMethodType card
   const order = await Order.create({
     user: user._id,
     cartItems: cart.cartItems,
-    shippingAddress: detailData.shippingAddress,
-    shippingPrice: detailData.shippingPrice,
+    shippingAddress: detailData,
+    shippingPrice: shippingPrice,
     totalOrderPrice: oderPrice,
     isPaid: true,
     paidAt: Date.now(),
