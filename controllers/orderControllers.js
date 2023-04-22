@@ -92,7 +92,7 @@ exports.getOrder = asyncHandler(async (req, res, next) => {
 exports.checkoutSession = asyncHandler(async (req, res, next) => {
   // app settings
   const taxPrice = 0;
-
+  const objectInfo = {};
   // 1) Get cart depend on cartId
   const cart = await Cart.findById(req.params.cartId);
   if (!cart) {
@@ -107,7 +107,8 @@ exports.checkoutSession = asyncHandler(async (req, res, next) => {
     : cart.totalCartPrice;
 
   const totalOrderPrice = cartPrice + taxPrice + req.body.shippingPrice;
-
+  objectInfo.shippingPrice = req.body.shippingPrice;
+  objectInfo.shippingAddress = req.body.shippingAddress;
   // 3) Create stripe checkout session
   const session = await stripe.checkout.sessions.create({
     line_items: [
@@ -127,7 +128,7 @@ exports.checkoutSession = asyncHandler(async (req, res, next) => {
     cancel_url: `${req.protocol}://localhost:3000/checkout`,
     customer_email: req.user.email || "masri_1997@hotmail.com",
     client_reference_id: req.params.cartId,
-    metadata: req.body.shippingAddress,
+    metadata: objectInfo,
   });
 
   // 4) send session to response
@@ -146,12 +147,12 @@ const createCardOrder = async (session) => {
   const order = await Order.create({
     user: user._id,
     cartItems: cart.cartItems,
-    shippingAddress: detailData,
+    shippingAddress: detailData.shippingAddress,
+    shippingPrice: detailData.shippingPrice,
     totalOrderPrice: oderPrice,
     isPaid: true,
     paidAt: Date.now(),
     paymentMethodType: "card",
-    // shippingPrice: detailData.shippingPrice,
   });
 
   // 4) After creating order, decrement product quantity, increment product sold
@@ -184,7 +185,7 @@ exports.webhookCheckout = asyncHandler(async (req, res, next) => {
   }
   if (event.type === "checkout.session.completed") {
     //  Create order
-    console.log("create Orderrr....")
+    console.log("create Orderrr....");
     createCardOrder(event.data.object);
   }
 
