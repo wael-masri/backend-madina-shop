@@ -136,7 +136,7 @@ exports.checkoutSession = asyncHandler(async (req, res, next) => {
 
 const createCardOrder = async (session) => {
   const cartId = session.client_reference_id;
-  const detailData = session.metadata.shippingAddress;
+  const detailData = session.metadata;
   const oderPrice = session.amount_total / 100;
 
   const cart = await Cart.findById(cartId);
@@ -146,12 +146,12 @@ const createCardOrder = async (session) => {
   const order = await Order.create({
     user: user._id,
     cartItems: cart.cartItems,
-    shippingAddress: detailData.shippingAddress,
+    shippingAddress: detailData,
     totalOrderPrice: oderPrice,
     isPaid: true,
     paidAt: Date.now(),
     paymentMethodType: "card",
-    shippingPrice: detailData.shippingPrice,
+    // shippingPrice: detailData.shippingPrice,
   });
 
   // 4) After creating order, decrement product quantity, increment product sold
