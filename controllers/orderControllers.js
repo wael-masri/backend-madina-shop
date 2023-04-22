@@ -92,7 +92,7 @@ exports.getOrder = asyncHandler(async (req, res, next) => {
 exports.checkoutSession = asyncHandler(async (req, res, next) => {
   // app settings
   const taxPrice = 0;
-  let allData = {...req.body.shippingAddress};
+ 
 
   // 1) Get cart depend on cartId
   const cart = await Cart.findById(req.params.cartId);
@@ -106,9 +106,10 @@ exports.checkoutSession = asyncHandler(async (req, res, next) => {
   const cartPrice = cart.totalPriceAfterDiscount
     ? cart.totalPriceAfterDiscount
     : cart.totalCartPrice;
-
-  const totalOrderPrice = cartPrice + taxPrice + req.body.shippingPrice;
-  allData.shippingPrice = req.body.shippingPrice;
+  
+    console.log(req.body)
+  const totalOrderPrice = cartPrice + taxPrice;
+  console.log(totalOrderPrice)
   // 3) Create stripe checkout session
   const session = await stripe.checkout.sessions.create({
     line_items: [
@@ -128,7 +129,7 @@ exports.checkoutSession = asyncHandler(async (req, res, next) => {
     cancel_url: `${req.protocol}://localhost:3000/checkout`,
     customer_email: req.user.email || "masri_1997@hotmail.com",
     client_reference_id: req.params.cartId,
-    metadata: allData,
+    metadata: req.body.shippingAddress,
   });
 
   // 4) send session to response
@@ -137,8 +138,7 @@ exports.checkoutSession = asyncHandler(async (req, res, next) => {
 
 const createCardOrder = async (session) => {
   const cartId = session.client_reference_id;
-  const shippingAddress = session.metadata.shippingAddress;
-  const shippingPrice = session.metadata.shippingPrice;
+  const detailData = session.metadata.shippingAddress;
   const oderPrice = session.amount_total / 100;
 
   const cart = await Cart.findById(cartId);
@@ -148,12 +148,12 @@ const createCardOrder = async (session) => {
   const order = await Order.create({
     user: user._id,
     cartItems: cart.cartItems,
-    shippingAddress,
+    shippingAddress : detailData.shippingAddress,
     totalOrderPrice: oderPrice,
     isPaid: true,
     paidAt: Date.now(),
     paymentMethodType: 'card',
-    shippingPrice
+    shippingPrice : detailData.shippingPrice
   });
 
   // 4) After creating order, decrement product quantity, increment product sold

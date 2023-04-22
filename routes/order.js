@@ -15,7 +15,7 @@ router.post(
   allowedTo("user", "admin", "manager"),
   createCashOrder
 );
-router.get(
+router.post(
   "/checkout-session/:cartId",
   protect,
   allowedTo("user", "admin", "manager"),
