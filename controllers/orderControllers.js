@@ -92,7 +92,6 @@ exports.getOrder = asyncHandler(async (req, res, next) => {
 exports.checkoutSession = asyncHandler(async (req, res, next) => {
   // app settings
   const taxPrice = 0;
- 
 
   // 1) Get cart depend on cartId
   const cart = await Cart.findById(req.params.cartId);
@@ -106,10 +105,9 @@ exports.checkoutSession = asyncHandler(async (req, res, next) => {
   const cartPrice = cart.totalPriceAfterDiscount
     ? cart.totalPriceAfterDiscount
     : cart.totalCartPrice;
-  
-    console.log(req.body)
-  const totalOrderPrice = cartPrice + taxPrice;
-  console.log(totalOrderPrice)
+
+  const totalOrderPrice = cartPrice + taxPrice + req.body.shippingPrice;
+
   // 3) Create stripe checkout session
   const session = await stripe.checkout.sessions.create({
     line_items: [
@@ -148,12 +146,12 @@ const createCardOrder = async (session) => {
   const order = await Order.create({
     user: user._id,
     cartItems: cart.cartItems,
-    shippingAddress : detailData.shippingAddress,
+    shippingAddress: detailData.shippingAddress,
     totalOrderPrice: oderPrice,
     isPaid: true,
     paidAt: Date.now(),
-    paymentMethodType: 'card',
-    shippingPrice : detailData.shippingPrice
+    paymentMethodType: "card",
+    shippingPrice: detailData.shippingPrice,
   });
 
   // 4) After creating order, decrement product quantity, increment product sold
@@ -171,7 +169,7 @@ const createCardOrder = async (session) => {
   }
 };
 exports.webhookCheckout = asyncHandler(async (req, res, next) => {
-  const sig = req.headers['stripe-signature'];
+  const sig = req.headers["stripe-signature"];
 
   let event;
 
@@ -184,7 +182,7 @@ exports.webhookCheckout = asyncHandler(async (req, res, next) => {
   } catch (err) {
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
-  if (event.type === 'checkout.session.completed') {
+  if (event.type === "checkout.session.completed") {
     //  Create order
     createCardOrder(event.data.object);
   }
