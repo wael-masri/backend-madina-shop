@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 const asyncHandler = require("express-async-handler");
 const ApiError = require("../middlewares/errors/apiError");
 const sendEmail = require("../middlewares/sendEmail");
-
+const sendEmailContact = require("../middlewares/sendEmailContact")
 //CREATE TOKEN FUNCTION
 const createToken = (payload) =>
   jwt.sign({ userId: payload }, process.env.JWT_SECRET_KEY, {
@@ -38,10 +38,10 @@ exports.login = asyncHandler(async (req, res, next) => {
   if (!user || !(await bcrypt.compare(req.body.password, user.password))) {
     return next(ApiError(`Incorrect email and password`, 401));
   }
-  const token = createToken(user._id)
-  const {password,...other} = user._doc
- 
-  res.status(200).json({...other, token });
+  const token = createToken(user._id);
+  const { password, ...other } = user._doc;
+
+  res.status(200).json({ ...other, token });
 });
 
 /*
@@ -124,11 +124,11 @@ exports.verifyPasswordCode = asyncHandler(async (req, res, next) => {
   @ PUBLIC
 */
 exports.resetPassword = asyncHandler(async (req, res, next) => {
-  const user = await User.findOne({email: req.body.email});
-  if(!user){
+  const user = await User.findOne({ email: req.body.email });
+  if (!user) {
     return next(ApiError("there is no user with email", 404));
   }
-  if(!user.passwordResetVerified){
+  if (!user.passwordResetVerified) {
     return next(ApiError("Reset code not verified", 400));
   }
   user.password = await bcrypt.hash(req.body.newPassword, 12);
@@ -140,7 +140,7 @@ exports.resetPassword = asyncHandler(async (req, res, next) => {
   user.profileImage = imageWithoutUrl;
   await user.save();
   const token = createToken(user._id);
-  res.status(200).json({token});
+  res.status(200).json({ token });
 });
 
 /*
@@ -151,39 +151,34 @@ exports.resetPassword = asyncHandler(async (req, res, next) => {
 exports.protect = asyncHandler(async (req, res, next) => {
   // 1) check if token exist, if exist get
   let token;
-  
+
   if (
     req.headers.authorization &&
     req.headers.authorization.startsWith("Bearer")
   ) {
     token = req.headers.authorization.split(" ")[1];
-    
   }
   if (!token) {
-   
     return next(ApiError("you are not login please signin", 401));
   }
   // 2) verify token exa t8yar l id aw expired 5eles
   const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
   // 3) check if user exist hon eza re7na m7ina l user
   const currentUser = await User.findById(decoded.userId);
-  
+
   if (!currentUser) {
-   
     return next(
       ApiError("the user that belong to this token does no longer exist ", 401)
     );
   }
   // 4) check if user change his password after token created
   if (currentUser.passwordChangedAt) {
-    
     const passChangedToTimesTamp = parseInt(
       currentUser.passwordChangedAt.getTime() / 1000,
       10
     );
     //password changed after token created (error)
     if (passChangedToTimesTamp > decoded.iat) {
-     
       return next(
         ApiError(
           "the user recently changed his password. please login again ",
@@ -193,7 +188,7 @@ exports.protect = asyncHandler(async (req, res, next) => {
     }
   }
   req.user = currentUser;
-  
+
   next();
 });
 
@@ -207,7 +202,21 @@ exports.allowedTo = (...roles) =>
     // 2)access registred user (req.user.role)
   });
 
-// FOR PUBLIC AND PRIVATE ROUTES (REACT JS REACT ROUTER DOM)  
-exports.verifyToken = asyncHandler(async(req,res,next) => {
-  res.status(200).json({ user: req.user })
-})
+// FOR PUBLIC AND PRIVATE ROUTES (REACT JS REACT ROUTER DOM)
+exports.verifyToken = asyncHandler(async (req, res, next) => {
+  res.status(200).json({ user: req.user });
+});
+
+exports.sendEmailContact = asyncHandler(async (req, res, next) => {
+  try {
+    await sendEmailContact({
+      email: req.body.email,
+      subject: `message from client name: ${req.body.name} `,
+      text: `Hi, Phone Number ${req.body.phone}, \n message : ${req.body.description} \n`,
+    });
+  } catch (error) {
+    return next(ApiError("there is error in sending email", 500));
+  }
+
+  res.status(200).json({ status: "success" });
+});

@@ -46,31 +46,32 @@ const orderSchema = new mongoose.Schema(
       enum: ["card", "cash"],
       default: "cash",
     },
+    shippingStatus: {
+      type: String,
+      enum: ["confirmed", "shipped","delivered"],
+      default: "confirmed",
+    },
     isPaid: {
       type: Boolean,
       default: false,
     },
     paidAt: Date,
-    isDelivered: {
+    refund: {
       type: Boolean,
       default: false,
     },
-    deliveredAt: Date,
+    refundAt: Date,
   },
   { timestamps: true }
 );
 
-// orderSchema.pre(/^find/, function (next) {
-//   this.populate({
-//     path: 'user',
-//     select: 'name profileImg email phone',
-//   }).populate({
-//     path: 'cartItems.product',
-//     select: 'title imageCover ',
-//   });
+orderSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: 'cartItems.product'
+  });
 
-//   next();
-// });
+  next();
+});
 
 module.exports = mongoose.model("Order", orderSchema);
 

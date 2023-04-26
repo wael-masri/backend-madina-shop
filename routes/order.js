@@ -4,6 +4,8 @@ const { protect, allowedTo } = require("../controllers/authControllers");
 const {
   createCashOrder,
   checkoutSession,
+  getOrder,
+  filterOrderForLoggedUser
 } = require("../controllers/orderControllers");
 
 const router = express.Router();
@@ -14,6 +16,17 @@ router.post(
   protect,
   allowedTo("user", "admin", "manager"),
   createCashOrder
+);
+router.get(
+  "/",
+  getOrder
+);
+router.get(
+  "/byUser",
+  protect,
+  allowedTo("user", "admin", "manager"),
+  filterOrderForLoggedUser,
+  getOrder
 );
 router.post(
   "/checkout-session/:cartId",

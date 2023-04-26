@@ -1,6 +1,6 @@
 const nodemailer = require("nodemailer");
 
-const sendEmail = async (options) => {
+const sendEmailContact = async (options) => {
   //1) create transporter houweh service la nb3ate email like gmail mailgun sendgrid
   const transporter = nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
@@ -10,12 +10,12 @@ const sendEmail = async (options) => {
   });
   //2) define email options (like from to subject)
    const mailOptions = {
-    from: `Madina_Shop App <masriii121212@gmail.com>`,
-    to: options.email,
+    from: `Madina_Shop App <${options.email}>`,
+    to: 'masriii121212@gmail.com',
     subject: options.subject,
     text: options.text
    }
   //3) send email
   await transporter.sendMail(mailOptions);
 };
-module.exports = sendEmail;
+module.exports = sendEmailContact;

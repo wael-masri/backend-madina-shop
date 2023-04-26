@@ -69,12 +69,12 @@ class ApiFeatures {
   }
   filter() {
     const queryStringObj = { ...this.queryString };
+    
     const excludesFields = ["page", "sort", "limit", "fields", "keyword"];
     excludesFields.forEach((field) => delete queryStringObj[field]);
     // Apply filtration using [gte, gt, lte, lt]
     let queryStr = JSON.stringify(queryStringObj);
     queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
-
     this.mongooseQuery = this.mongooseQuery.find(JSON.parse(queryStr));
 
     return this;

@@ -7,6 +7,7 @@ const {
   resetPassword,
   protect,
   verifyToken,
+  sendEmailContact,
 } = require("../controllers/authControllers");
 const {
   signupValidator,
@@ -22,4 +23,5 @@ router.post("/forgotPassword", forgotPassword);
 router.post("/verifyPassword", verifyPasswordCode);
 router.post("/resetPassword", resetPassword);
 router.post("/verifyToken",protect,verifyToken);
+router.post("/sendEmail",sendEmailContact);
 module.exports = router;

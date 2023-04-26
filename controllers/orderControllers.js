@@ -71,8 +71,13 @@ exports.createCashOrder = asyncHandler(async (req, res, next) => {
 */
 
 exports.getOrder = asyncHandler(async (req, res, next) => {
+  let filter = {};
+  if(req.filterObj){
+   filter=req.filterObj;
+  }
   const documentCounts = await Order.countDocuments();
-  const apiFeatures = new ApiFeatures(Order.find(), req.query)
+  
+  const apiFeatures = new ApiFeatures(Order.find(filter), req.query)
     .paginate(documentCounts)
     .filter()
     .search()
@@ -192,4 +197,12 @@ exports.webhookCheckout = asyncHandler(async (req, res, next) => {
   }
 
   res.status(200).json({ received: true });
+});
+exports.filterOrderForLoggedUser = asyncHandler(async (req, res, next) => {
+  if(req.query.refund){
+    var isUpdated = (req.query.refund === 'true')
+    req.filterObj = { user: req.user._id,refund: isUpdated};
+  }
+ 
+  next();
 });
