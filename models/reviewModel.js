@@ -38,7 +38,7 @@ const reviewSchema = new mongoose.Schema(
 // kel ma ne3mol finde y3mlna populate w yjblna name of user
 reviewSchema.pre(/^find/, function (next) {
   this.populate([
-    { path: "user", select: "name profileImage active" },
+    { path: "user", select: "name profileImage active imageGoogle" },
     {
       path: "product",
       select: "title imageCover -category -subCategories -brand",

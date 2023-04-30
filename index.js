@@ -11,17 +11,55 @@ const {webhookCheckout} = require("./controllers/orderControllers");
 const ApiError = require("./middlewares/errors/apiError");
 const globalError = require("./middlewares/errors/globalError");
 const ErrorOutsideExpress = require("./middlewares/errors/errorOutsideExpress");
+const passportSetup = require("./passport");
 //DATABASE IMPORT
 const dbConnection = require("./database");
+const cookieSession = require("cookie-session");
+const passport = require("passport");
 console.log("hello backend");
 dotenv.config({ path: "config.env" });
-const app = express();
 
+const app = express();
 app.use(cors());
+// app.use(
+	// cors({
+	// 	origin: "http://localhost:3000",
+	// 	methods: "GET,POST,PUT,DELETE",
+	// 	credentials: true,
+	// })
+// );
+
 app.options("*", cors());
 //COMPRESS ALL RESPONSE
 app.use(compression());
-console.log("MedinaShop Running...")
+
+// google auth
+app.use(
+  cookieSession({
+    name:'session',
+    keys:["cyberwolve"],
+    maxAge:24*60*60*100,
+  })
+);
+app.use(function(request, response, next) {
+  if (request.session && !request.session.regenerate) {
+      request.session.regenerate = (cb) => {
+          cb()
+      }
+  }
+  if (request.session && !request.session.save) {
+      request.session.save = (cb) => {
+          cb()
+      }
+  }
+  next()
+})
+app.use(passport.initialize());
+app.use(passport.session());
+// google auth
+
+
+
 //webhhok checkout
 app.post(
   "/webhook-checkout",

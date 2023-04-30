@@ -27,8 +27,7 @@ exports.createUserValidator = [
       })
     ),
   check("password")
-    .notEmpty()
-    .withMessage("password required")
+  .optional()
     .isLength({ min: 8 })
     .withMessage("Password must be at least 6 characters"),
   check("phone")
@@ -70,7 +69,7 @@ exports.deleteUserValidator = [
 exports.changeUserPasswordValidator = [
   check("id").isMongoId().withMessage("Invalid user id format"),
   check("currentPassword").notEmpty().withMessage("current password required"),
-  check("password").notEmpty().withMessage("password required").isLength({ min: 8 })
+  check("password").optional().isLength({ min: 8 })
   .withMessage("Password must be at least 6 characters")
   .custom( async (password,{req}) => {
    const user = await User.findById(req.params.id);

@@ -6,10 +6,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       trim: true,
       required: [true, "name required"],
-      unique: [true, "name must be unique"],
       minlength: [3, "Too short  name"],
       maxlength: [22, "Too long  name"],
     },
+    googleId: String,
     email: {
       type: String,
       trim: true,
@@ -24,9 +24,14 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: ''
     },
+    imageGoogle:{
+      type:String
+    },
+    tokenGoogle:{
+      type:String
+    },
     password: {
       type: String,
-      required: [true, "password required"],
       minlength: [8, "Too short password"],
     },
     passwordChangedAt: {
@@ -50,6 +55,13 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    emailVerify: {
+      type: String,
+    },
+    emailVerifyexpired: {
+      type: Date,
+    },
+    
     wishList: [
       {
         type: mongoose.Schema.ObjectId,

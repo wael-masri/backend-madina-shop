@@ -23,9 +23,9 @@ exports.signup = asyncHandler(async (req, res, next) => {
     name: req.body.name,
     email: req.body.email,
     password: req.body.password,
+    active: false
   });
-  const token = createToken(user._id);
-  res.status(200).json({ data: user, token });
+  res.status(200).json({ data: user});
 });
 
 /*
@@ -218,5 +218,61 @@ exports.sendEmailContact = asyncHandler(async (req, res, next) => {
     return next(ApiError("there is error in sending email", 500));
   }
 
+  res.status(200).json({ status: "success" });
+});
+
+exports.sendEmailRegister = asyncHandler(async (req, res, next) => {
+   // 1)get user by email
+   const user = await User.findOne({ email: req.body.email });
+   if (!user) {
+     return next(
+       ApiError(`there is no user with that email ${req.body.email}`, 404)
+     );
+   }
+   // 2) if email exist, generate reset random 6 digits and save it in db
+   const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
+   const hashResetCode = crypto
+     .createHash("sha256")
+     .update(resetCode)
+     .digest("hex");
+   user.emailVerify = hashResetCode;
+   user.emailVerifyexpired = Date.now() + 10 * 60 * 1000;
+   // expired hayda l code ba3ed 10 min
+   await user.save();
+  
+  try {
+    await sendEmailContact({
+      email: req.body.email,
+      subject: `Your email reset code (valid for 10 min)`,
+      text: `Hi ${user.name}, \n We received a request to verify the email on your Madina shop account. \n
+      ${resetCode} `,
+    });
+  } catch (error) {
+    user.emailVerify = undefined;
+    user.emailVerifyexpired = undefined;
+    await user.save();
+    return next(ApiError("there is error in sending email", 500));
+  }
+
+  res.status(200).json({ status: "success" });
+});
+exports.verifyEmailCode = asyncHandler(async (req, res, next) => {
+  // 1) get user based on reset code
+  const hashedResetCode = crypto
+    .createHash("sha256")
+    .update(req.body.resetCode)
+    .digest("hex");
+    console.log(hashedResetCode)
+  const user = await User.findOne({
+    emailVerify: hashedResetCode,
+    emailVerifyexpired: { $gt: Date.now() },
+  });
+
+  if (!user) {
+    return next(ApiError("Reset code invalid or expired", 500));
+  }
+  // 2) reset code valid
+  user.active = true;
+  await user.save();
   res.status(200).json({ status: "success" });
 });

@@ -5,7 +5,8 @@ const {
   createCashOrder,
   checkoutSession,
   getOrder,
-  filterOrderForLoggedUser
+  filterOrderForLoggedUser,
+  updateOrderRefund
 } = require("../controllers/orderControllers");
 
 const router = express.Router();
@@ -16,6 +17,12 @@ router.post(
   protect,
   allowedTo("user", "admin", "manager"),
   createCashOrder
+);
+router.put(
+  "/:id",
+  protect,
+  allowedTo("user", "admin", "manager"),
+  updateOrderRefund
 );
 router.get(
   "/",

@@ -206,3 +206,28 @@ exports.filterOrderForLoggedUser = asyncHandler(async (req, res, next) => {
  
   next();
 });
+
+exports.updateOrderRefund = asyncHandler(async (req, res, next) => {
+  const order = await Order.findById(req.params.id);
+  if (!order) {
+    return next(
+      new ApiError(
+        `There is no such a order with this id:${req.params.id}`,
+        404
+      )
+    );
+  }
+
+  // update order to paid
+  if(req.body.refund){
+    order.refund = false;
+  }else{
+    order.refund = true;
+  }
+  
+  order.refundAt = Date.now();
+
+  const updatedOrder = await order.save();
+
+  res.status(200).json({ status: 'success', data: updatedOrder });
+});

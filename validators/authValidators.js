@@ -8,13 +8,7 @@ exports.signupValidator = [
     .withMessage("User name required")
     .isLength({ min:3,max:22 })
     .withMessage("Too short User name")
-    .custom((name) =>
-      User.findOne({ name }).then((user) => {
-        if (user) {
-          return Promise.reject(new Error(`this name is already in user`));
-        }
-      })
-    ),
+   ,
   check("email")
     .notEmpty()
     .withMessage("email required")
