@@ -70,8 +70,8 @@ dbConnection();
 //MIDDLEWARES ROUTES
 app.use(express.json());
 app.use(
-  "/assets/uploads/",
-  express.static(path.join(__dirname, "/assets/uploads/"))
+  "/products",
+  express.static(path.join(__dirname, "assets/uploads/products"))
 );
 app.use(express.static(path.join(__dirname, "assets/uploads/")));
 mountRoutes(app);
