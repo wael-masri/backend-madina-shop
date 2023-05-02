@@ -71,9 +71,9 @@ dbConnection();
 app.use(express.json());
 app.use(
   "/products",
-  express.static(path.join(__dirname, "/assets/uploads/products"))
+  express.static(path.join(__dirname, "/assets/uploads/products/"))
 );
-app.use(express.static(path.join(__dirname, "assets/uploads/")));
+//app.use(express.static(path.join(__dirname, "assets/uploads/")));
 mountRoutes(app);
 app.all("*", (req, res, next) => {
   next(ApiError(`Can't find this router..! ${req.originalUrl}`, 400));
