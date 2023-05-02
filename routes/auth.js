@@ -78,7 +78,7 @@ router.get(
     credentials: true,
   }),
   passport.authenticate("google", {
-    successRedirect: "http://localhost:3000/login",
+    successRedirect: "https://backend-madina-shop.onrender.com/login",
     failureRedirect: "/login/failed",
   })
 );
@@ -91,7 +91,7 @@ router.get("/logout",	cors({
     if (err) {
       return next(err);
     }
-    res.redirect("http://localhost:3000/");
+    res.redirect("https://backend-madina-shop.onrender.com");
   });
 });
 
