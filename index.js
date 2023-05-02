@@ -71,13 +71,19 @@ dbConnection();
 
 //MIDDLEWARES ROUTES
 app.use(express.json());
-app.use(express.static(path.join(__dirname, "assets/uploads")));
+app.use(express.static(path.join(__dirname, "assets/uploads/brands")));
+app.use(express.static(path.join(__dirname, "assets/uploads/categories")));
+app.use(express.static(path.join(__dirname, "assets/uploads/products")));
+app.use(express.static(path.join(__dirname, "assets/uploads/users")));
 mountRoutes(app);
 app.all("*", (req, res, next) => {
   next(ApiError(`Can't find this router..! ${req.originalUrl}`, 400));
 });
 //GLOBAL ERROR HANDLING MIDDLEWARE FOR EXPRESS
 app.use(globalError);
+
+
+
 
 //SERVER SIDE RUNNING
 const PORT = process.env.PORT || 5000;
