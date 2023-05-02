@@ -6,7 +6,7 @@ const path = require("path");
 const dotenv = require("dotenv");
 //PAGES IMPORT
 const mountRoutes = require("./routes");
-const {webhookCheckout} = require("./controllers/orderControllers");
+const { webhookCheckout } = require("./controllers/orderControllers");
 //MIDDLEWARES IMPORT
 const ApiError = require("./middlewares/errors/apiError");
 const globalError = require("./middlewares/errors/globalError");
@@ -22,11 +22,11 @@ dotenv.config({ path: "config.env" });
 const app = express();
 app.use(cors());
 // app.use(
-	// cors({
-	// 	origin: "http://localhost:3000",
-	// 	methods: "GET,POST,PUT,DELETE",
-	// 	credentials: true,
-	// })
+// cors({
+// 	origin: "http://localhost:3000",
+// 	methods: "GET,POST,PUT,DELETE",
+// 	credentials: true,
+// })
 // );
 
 app.options("*", cors());
@@ -36,29 +36,27 @@ app.use(compression());
 // google auth
 app.use(
   cookieSession({
-    name:'session',
-    keys:["cyberwolve"],
-    maxAge:24*60*60*100,
+    name: "session",
+    keys: ["cyberwolve"],
+    maxAge: 24 * 60 * 60 * 100,
   })
 );
-app.use(function(request, response, next) {
+app.use(function (request, response, next) {
   if (request.session && !request.session.regenerate) {
-      request.session.regenerate = (cb) => {
-          cb()
-      }
+    request.session.regenerate = (cb) => {
+      cb();
+    };
   }
   if (request.session && !request.session.save) {
-      request.session.save = (cb) => {
-          cb()
-      }
+    request.session.save = (cb) => {
+      cb();
+    };
   }
-  next()
-})
+  next();
+});
 app.use(passport.initialize());
 app.use(passport.session());
 // google auth
-
-
 
 //webhhok checkout
 app.post(
@@ -71,19 +69,17 @@ dbConnection();
 
 //MIDDLEWARES ROUTES
 app.use(express.json());
-app.use(express.static(path.join(__dirname, "assets/uploads/brands")));
-app.use(express.static(path.join(__dirname, "assets/uploads/categories")));
-app.use(express.static(path.join(__dirname, "assets/uploads/products")));
-app.use(express.static(path.join(__dirname, "assets/uploads/users")));
+app.use(
+  "/assets/uploads/",
+  express.static(path.join(__dirname, "/assets/uploads/"))
+);
+app.use(express.static(path.join(__dirname, "assets/uploads/")));
 mountRoutes(app);
 app.all("*", (req, res, next) => {
   next(ApiError(`Can't find this router..! ${req.originalUrl}`, 400));
 });
 //GLOBAL ERROR HANDLING MIDDLEWARE FOR EXPRESS
 app.use(globalError);
-
-
-
 
 //SERVER SIDE RUNNING
 const PORT = process.env.PORT || 5000;
