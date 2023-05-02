@@ -33,7 +33,7 @@ router.post("/sendVerifyEmail", sendEmailRegister);
 
 // GOOGLE AUTH
 router.get("/login/success",	cors({
-	origin: "http://localhost:3000",
+	origin: ["http://localhost:3000","https://madina-shop-frontend.onrender.com"],
 	methods: "GET,POST,PUT,DELETE",
 	credentials: true,
 }), (req, res) => {
@@ -50,7 +50,7 @@ router.get("/login/success",	cors({
 router.get(
   "/google",
   cors({
-    origin: "http://localhost:3000",
+    origin: ["http://localhost:3000","https://madina-shop-frontend.onrender.com"],
     methods: "GET,POST,PUT,DELETE",
     credentials: true,
   }),
@@ -59,7 +59,7 @@ router.get(
 router.get(
   "/login/failed",
   cors({
-    origin: "http://localhost:3000",
+    origin: ["http://localhost:3000","https://madina-shop-frontend.onrender.com"],
     methods: "GET,POST,PUT,DELETE",
     credentials: true,
   }),
@@ -73,7 +73,7 @@ router.get(
 router.get(
   "/google/callback",
   cors({
-    origin: "http://localhost:3000",
+    origin: ["http://localhost:3000","https://madina-shop-frontend.onrender.com"],
     methods: "GET,POST,PUT,DELETE",
     credentials: true,
   }),
@@ -83,7 +83,7 @@ router.get(
   })
 );
 router.get("/logout",	cors({
-	origin: "http://localhost:3000",
+	origin: ["http://localhost:3000","https://madina-shop-frontend.onrender.com"],
 	methods: "GET,POST,PUT,DELETE",
 	credentials: true,
 }), (req, res) => {
