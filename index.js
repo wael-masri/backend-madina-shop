@@ -22,8 +22,8 @@ const app = express();
 app.use(cors());
 //MIDDLEWARES ROUTES
 app.use(express.json());
-app.use("/products",express.static(__dirname + "assets/uploads/products"));
-app.use("/brands",express.static("assets/uploads/brands"));
+app.use("/products",express.static(__dirname + "/assets/uploads/products"));
+app.use("/brands",express.static("/assets/uploads/brands"));
 app.use("/categories",express.static(__dirname + "assets/uploads/categories"));
 app.use("/users",express.static(__dirname + "assets/uploads/users"));
 //app.use(express.static(__dirname + "/assets/uploads/"));
