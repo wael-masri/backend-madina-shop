@@ -64,8 +64,8 @@ dbConnection();
 app.use(express.json());
 //app.use(express.static(path.join(__dirname, "/assets/uploads/")));
 app.use(
-  "/assets/uploads",
-  express.static(path.join(__dirname, "assets", "uploads"))
+  "/products",
+  express.static(path.join(__dirname, "assets", "uploads","products"))
 );
 mountRoutes(app);
 app.all("*", (req, res, next) => {
