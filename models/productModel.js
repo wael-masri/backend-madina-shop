@@ -115,17 +115,17 @@ productSchema.statics.calcNumberOfProducts = async function (categoryId) {
   }
 };
 
-//BI RUN MA3 UPDATE, GET AND GET ALL
-productSchema.post("init", async function (doc) {
-  //return image url + image name
-  setImageUrl(doc);
-});
-//HON KERML YRDLNA URL BASS Y3MOL CREATE LA POST
-productSchema.post("save", async function (doc) {
-  //return image url + image name
-  setImageUrl(doc);
-  await this.constructor.calcNumberOfProducts(this.category);
-});
+// //BI RUN MA3 UPDATE, GET AND GET ALL
+// productSchema.post("init", async function (doc) {
+//   //return image url + image name
+//   setImageUrl(doc);
+// });
+// //HON KERML YRDLNA URL BASS Y3MOL CREATE LA POST
+// productSchema.post("save", async function (doc) {
+//   //return image url + image name
+//   setImageUrl(doc);
+//   await this.constructor.calcNumberOfProducts(this.category);
+// });
 productSchema.post("remove", async function () {
   await this.constructor.calcNumberOfProducts(this.category._id);
 });
