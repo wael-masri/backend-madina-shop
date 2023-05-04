@@ -4,7 +4,6 @@ const User = require("./models/userModel");
 const dotenv = require("dotenv");
 const jwt = require("jsonwebtoken");
 dotenv.config({ path: "config.env" });
-console.log("hellooooo");
 passport.use(
   new GoogleStrategy(
     {

@@ -77,20 +77,20 @@ const productSchema = new mongoose.Schema(
   }
 );
 
-// const setImageUrl = (doc) => {
-//   if (doc.imageCover) {
-//     const imageUrl = `${process.env.BASE_URL}/products/${doc.imageCover}`;
-//     doc.imageCover = imageUrl;
-//   }
-//   if (doc.images) {
-//     const imageList = [];
-//     doc.images.forEach((image) => {
-//       const imageUrl = `${process.env.BASE_URL}/products/${image}`;
-//       imageList.push(imageUrl);
-//     });
-//     doc.images = imageList;
-//   }
-// };
+const setImageUrl = (doc) => {
+  if (doc.imageCover) {
+    const imageUrl = `${process.env.BASE_URL}/products/${doc.imageCover}`;
+    doc.imageCover = imageUrl;
+  }
+  if (doc.images) {
+    const imageList = [];
+    doc.images.forEach((image) => {
+      const imageUrl = `${process.env.BASE_URL}/products/${image}`;
+      imageList.push(imageUrl);
+    });
+    doc.images = imageList;
+  }
+};
 productSchema.statics.calcNumberOfProducts = async function (categoryId) {
   const result = await this.aggregate([
     {

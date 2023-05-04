@@ -21,13 +21,6 @@ dotenv.config({ path: "config.env" });
 
 const app = express();
 app.use(cors());
-// app.use(
-// cors({
-// 	origin: "http://localhost:3000",
-// 	methods: "GET,POST,PUT,DELETE",
-// 	credentials: true,
-// })
-// );
 
 app.options("*", cors());
 //COMPRESS ALL RESPONSE
@@ -69,7 +62,7 @@ dbConnection();
 
 //MIDDLEWARES ROUTES
 app.use(express.json());
-app.use(express.static(path.join(__dirname, "assets/uploads/products")));
+app.use(express.static(path.join(__dirname, "assets/uploads/")));
 mountRoutes(app);
 app.all("*", (req, res, next) => {
   next(ApiError(`Can't find this router..! ${req.originalUrl}`, 400));
