@@ -21,57 +21,53 @@ dotenv.config({ path: "config.env" });
 const app = express();
 app.use(cors());
 //MIDDLEWARES ROUTES
-app.use(express.json());
-app.use("/products",express.static("assets/uploads/products"));
-// app.use("/brands",express.static("/assets/uploads/brands"));
-// app.use("/categories",express.static(__dirname + "assets/uploads/categories"));
-// app.use("/users",express.static(__dirname + "assets/uploads/users"));
-//app.use(express.static(__dirname + "/assets/uploads/"));
-//app.use("/", express.static(__dirname + "/assets/uploads/"));
-//app.options("*", cors());
+
+app.options("*", cors());
 //COMPRESS ALL RESPONSE
-//app.use(compression());
+app.use(compression());
 
 // google auth
-// app.use(
-//   cookieSession({
-//     name: "session",
-//     keys: ["cyberwolve"],
-//     maxAge: 24 * 60 * 60 * 100,
-//   })
-// );
-// app.use(function (request, response, next) {
-//   if (request.session && !request.session.regenerate) {
-//     request.session.regenerate = (cb) => {
-//       cb();
-//     };
-//   }
-//   if (request.session && !request.session.save) {
-//     request.session.save = (cb) => {
-//       cb();
-//     };
-//   }
-//   next();
-// });
-//app.use(passport.initialize());
-//app.use(passport.session());
+app.use(
+  cookieSession({
+    name: "session",
+    keys: ["cyberwolve"],
+    maxAge: 24 * 60 * 60 * 100,
+  })
+);
+app.use(function (request, response, next) {
+  if (request.session && !request.session.regenerate) {
+    request.session.regenerate = (cb) => {
+      cb();
+    };
+  }
+  if (request.session && !request.session.save) {
+    request.session.save = (cb) => {
+      cb();
+    };
+  }
+  next();
+});
+app.use(passport.initialize());
+app.use(passport.session());
 // google auth
 
 //webhhok checkout
-// app.post(
-//   "/webhook-checkout",
-//   express.raw({ type: "application/json" }),
-//   webhookCheckout
-// );
+app.post(
+  "/webhook-checkout",
+  express.raw({ type: "application/json" }),
+  webhookCheckout
+);
 //EXCUTE DATABASE CONNECTION
 dbConnection();
+app.use(express.json());
+app.use(express.static(path.join(__dirname, "assets/uploads/")));
+mountRoutes(app);
 
-//mountRoutes(app);
-// app.all("*", (req, res, next) => {
-//   next(ApiError(`Can't find this router..! ${req.originalUrl}`, 400));
-// });
+app.all("*", (req, res, next) => {
+  next(ApiError(`Can't find this router..! ${req.originalUrl}`, 400));
+});
 //GLOBAL ERROR HANDLING MIDDLEWARE FOR EXPRESS
-//app.use(globalError);
+app.use(globalError);
 
 //SERVER SIDE RUNNING
 const PORT = process.env.PORT || 5000;
@@ -80,4 +76,4 @@ const server = app.listen(PORT, () => {
 });
 
 //HANDLE REJECTION ERROR OUTSIDE EXPRESS (SUCH: MONGODB ERRORS)
-//ErrorOutsideExpress(server);
+ErrorOutsideExpress(server);

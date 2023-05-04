@@ -77,20 +77,20 @@ const productSchema = new mongoose.Schema(
   }
 );
 
-// const setImageUrl = (doc) => {
-//   if (doc.imageCover) {
-//     const imageUrl = `${process.env.BASE_URL}/products/${doc.imageCover}`;
-//     doc.imageCover = imageUrl;
-//   }
-//   if (doc.images) {
-//     const imageList = [];
-//     doc.images.forEach((image) => {
-//       const imageUrl = `${process.env.BASE_URL}/products/${image}`;
-//       imageList.push(imageUrl);
-//     });
-//     doc.images = imageList;
-//   }
-// };
+const setImageUrl = (doc) => {
+  if (doc.imageCover) {
+    const imageUrl = `${process.env.BASE_URL}/products/${doc.imageCover}`;
+    doc.imageCover = imageUrl;
+  }
+  if (doc.images) {
+    const imageList = [];
+    doc.images.forEach((image) => {
+      const imageUrl = `${process.env.BASE_URL}/products/${image}`;
+      imageList.push(imageUrl);
+    });
+    doc.images = imageList;
+  }
+};
 productSchema.statics.calcNumberOfProducts = async function (categoryId) {
   const result = await this.aggregate([
     {
@@ -115,17 +115,17 @@ productSchema.statics.calcNumberOfProducts = async function (categoryId) {
   }
 };
 
-// //BI RUN MA3 UPDATE, GET AND GET ALL
-// productSchema.post("init", async function (doc) {
-//   //return image url + image name
-//   setImageUrl(doc);
-// });
-// //HON KERML YRDLNA URL BASS Y3MOL CREATE LA POST
-// productSchema.post("save", async function (doc) {
-//   //return image url + image name
-//   setImageUrl(doc);
-//   await this.constructor.calcNumberOfProducts(this.category);
-// });
+//BI RUN MA3 UPDATE, GET AND GET ALL
+productSchema.post("init", async function (doc) {
+  //return image url + image name
+  setImageUrl(doc);
+});
+//HON KERML YRDLNA URL BASS Y3MOL CREATE LA POST
+productSchema.post("save", async function (doc) {
+  //return image url + image name
+  setImageUrl(doc);
+  await this.constructor.calcNumberOfProducts(this.category);
+});
 productSchema.post("remove", async function () {
   await this.constructor.calcNumberOfProducts(this.category._id);
 });
