@@ -16,21 +16,18 @@ const passportSetup = require("./passport");
 const dbConnection = require("./database");
 const cookieSession = require("cookie-session");
 const passport = require("passport");
-console.log("hello backend");
 dotenv.config({ path: "config.env" });
-console.log("hello");
+
 const app = express();
 app.use(cors());
-
+//MIDDLEWARES ROUTES
+app.use(express.json());
+//app.use(express.static(__dirname + "/assets/uploads/"));
+//app.use("/", express.static(__dirname + "/assets/uploads/"));
 app.options("*", cors());
 //COMPRESS ALL RESPONSE
 app.use(compression());
-//app.use(express.static(path.join(__dirname, "/assets/uploads/")));
-app.use(express.json());
-app.use(
-  "/products",
-  express.static(__dirname + "/assets/uploads/products")
-);
+
 // google auth
 app.use(
   cookieSession({
@@ -65,10 +62,11 @@ app.post(
 //EXCUTE DATABASE CONNECTION
 dbConnection();
 
-//MIDDLEWARES ROUTES
-
-
 mountRoutes(app);
+app.use(express.static(path.join(__dirname, "/assets/uploads/products")));
+app.use(express.static(path.join(__dirname, "/assets/uploads/brands")));
+app.use(express.static(path.join(__dirname, "/assets/uploads/categories")));
+app.use(express.static(path.join(__dirname, "/assets/uploads/users")));
 app.all("*", (req, res, next) => {
   next(ApiError(`Can't find this router..! ${req.originalUrl}`, 400));
 });
