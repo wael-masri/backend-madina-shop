@@ -18,7 +18,7 @@ const cookieSession = require("cookie-session");
 const passport = require("passport");
 console.log("hello backend");
 dotenv.config({ path: "config.env" });
-
+console.log("hello");
 const app = express();
 app.use(cors());
 
