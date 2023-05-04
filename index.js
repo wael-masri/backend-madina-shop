@@ -67,10 +67,12 @@ app.post(
 dbConnection();
 
 mountRoutes(app);
-
-app.all("*", (req, res, next) => {
-  next(ApiError(`Can't find this router..! ${req.originalUrl}`, 400));
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "client", "build", "index.html"));
 });
+// app.all("*", (req, res, next) => {
+//   next(ApiError(`Can't find this router..! ${req.originalUrl}`, 400));
+// });
 //GLOBAL ERROR HANDLING MIDDLEWARE FOR EXPRESS
 app.use(globalError);
 
