@@ -25,7 +25,12 @@ app.use(cors());
 app.options("*", cors());
 //COMPRESS ALL RESPONSE
 app.use(compression());
-
+//app.use(express.static(path.join(__dirname, "/assets/uploads/")));
+app.use(express.json());
+app.use(
+  "/products",
+  express.static(__dirname + "/assets/uploads/products")
+);
 // google auth
 app.use(
   cookieSession({
@@ -61,12 +66,8 @@ app.post(
 dbConnection();
 
 //MIDDLEWARES ROUTES
-app.use(express.json());
-//app.use(express.static(path.join(__dirname, "/assets/uploads/")));
-app.use(
-  "/products",
-  express.static(path.join(__dirname, "assets", "uploads","products"))
-);
+
+
 mountRoutes(app);
 app.all("*", (req, res, next) => {
   next(ApiError(`Can't find this router..! ${req.originalUrl}`, 400));
